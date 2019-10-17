@@ -48,18 +48,24 @@ class Author  {
 	 *
 	 * @return int value of Author id (or null if new Author)
 	 **/
-	public function getAuthorId(): int {
+	public function getAuthorId(): intk {
 		return ($this->AuthorId);
 	}
 	/**
 	 * mutator method for Author id
 	 *
-	 * @param  int| string $newAuthorId value of new Author id
-	 * @throws \RangeException if $newAuthorId is not positive
+	 * @param  int| $newAuthorId value of new Author id
+	 * @throws \UnexpectedValueExceptioneException if $newAuthorId is not  an integer
 	 * @throws \TypeError if the Author Id is not
 	 **/
-	public function setAuthorId( $newAuthorId): void {
-		try {
+	public function setAuthorId($newAuthorId, $exception, $newProfileId)
+			{$newProfileId = filter_var($newProfileId, FILTER_VALIDATE_INT);
+			if ($newAuthorId === false) {
+				throw (new UnexpectedValueException);
+			}
+
+
+		 {
 			$int = self::validateInt($newAuthorId);
 		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
 			$exceptionType = get_class($exception);
