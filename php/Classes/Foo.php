@@ -1,4 +1,15 @@
 <?php
+namespace Ianwfoster\ObjectOriented;
+
+require_once(dirname(__DIR__, 1) . "/vendor/autoload.php");
+
+use Ramsey\Uuid\Uuid;
+
+use ValidateUuid;
+/**
+ * id for this Author; this is the primary key
+ * @var Uuid $AuthorId
+ **/
 
 /**
  * This is a class about an Author
@@ -72,9 +83,9 @@ class author {
 
 		 {
 			$int = self::validateInt($newAuthorId);
-		}catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
+		}catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError ($exception)) {
 			$exceptionType = get_class($exception);
-			throw(new $exceptionType($exception->getMessage(), 0, $exception));
+			throw(new $exceptionType($exception->getAuthor(), 0, $exception));
 		}
 		// convert and store the Author id
 		$this->AuthorId = $int;
