@@ -4,7 +4,7 @@
  * This is a class about an Author
  *
  * This is a class that will capsulise and sanitise with a mutator/setter and accessor/getter.
- * This will document all states variables in the class.This will also document the construcor method.
+ * This will document all states variables in the class.This will also document the constructor method.
  *
  * @author Ian W Foster <ifoster2@cnm.edu>
  *
