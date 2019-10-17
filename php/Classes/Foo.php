@@ -48,7 +48,7 @@ class Author  {
 	 *
 	 * @return int value of Author id (or null if new Author)
 	 **/
-	public function getAuthorId(): intk {
+	public function getAuthorId(): int {
 		return ($this->AuthorId);
 	}
 	/**
@@ -59,15 +59,17 @@ class Author  {
 	 * @throws \TypeError if the Author Id is not
 	 **/
 	public function setAuthorId($newAuthorId, $exception, $newProfileId)
+		// verify the author id is valid
 			{$newProfileId = filter_var($newProfileId, FILTER_VALIDATE_INT);
 			if ($newAuthorId === false) {
-				throw (new UnexpectedValueException);
+				throw (new UnexpectedValueException("profle is not a valid integer"));
 			}
+			//convert and store this author id
 
 
 		 {
 			$int = self::validateInt($newAuthorId);
-		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
+		}catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
 			$exceptionType = get_class($exception);
 			throw(new $exceptionType($exception->getMessage(), 0, $exception));
 		}
