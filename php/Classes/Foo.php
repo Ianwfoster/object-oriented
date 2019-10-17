@@ -1,28 +1,22 @@
 <?php
 
-namespace Ianwfoster\objectoriented;
-
-require_once(dirname(__DIR__, 2) . "/vendor/autoload.php");
-
-use Ramsey\Uuid\Uuid;
 /**
  * This is a class about an Author
  *
- * This is a class will capsule and sanitise with a mutator/setter and accessor/getter.
+ * This is a class that will capsulise and sanitise with a mutator/setter and accessor/getter.
  * This will document all states variables in the class.This will also document the construcor method.
  *
  * @author Ian W Foster <ifoster2@cnm.edu>
  *
  **/
 class Author  {
-	use ValidateUuid;
 	/**
 	 * id for this Author; this is the primary key
-	 * @var Uuid $AuthorId
+	 *
 	 **/
 	private $AuthorId;
 	/**
-	 * at handle for this Author; this is a unique index
+	 * author id that is this Author; this is a unique index
 	 * @var string $AuthorAvatarUrl
 	 **/
 	private $AuthorAvatarUrl;
@@ -47,36 +41,32 @@ class Author  {
 	 **/
 	private $AuthorName;
 	/**
-	 * salt for Author password
+	 * hash is Author password
 	 *
-	 * @var $AuthorSalt
-	 */
-	private $AuthorSalt;
-
 	/**
 	 * accessor method for Author id
 	 *
-	 * @return Uuid value of Author id (or null if new Author)
+	 * @return int value of Author id (or null if new Author)
 	 **/
-	public function getAuthorId(): Uuid {
+	public function getAuthorId(): int {
 		return ($this->AuthorId);
 	}
 	/**
 	 * mutator method for Author id
 	 *
-	 * @param  Uuid| string $newAuthorId value of new Author id
+	 * @param  int| string $newAuthorId value of new Author id
 	 * @throws \RangeException if $newAuthorId is not positive
 	 * @throws \TypeError if the Author Id is not
 	 **/
 	public function setAuthorId( $newAuthorId): void {
 		try {
-			$uuid = self::validateUuid($newAuthorId);
+			$int = self::validateInt($newAuthorId);
 		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
 			$exceptionType = get_class($exception);
 			throw(new $exceptionType($exception->getMessage(), 0, $exception));
 		}
 		// convert and store the Author id
-		$this->AuthorId = $uuid;
+		$this->AuthorId = $int;
 	}
 	/**
 	 * accessor method for account activation token
