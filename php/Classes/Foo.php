@@ -56,15 +56,18 @@ class Author  {
 	 *
 	 * @param  int| $newAuthorId value of new Author id
 	 * @throws \UnexpectedValueExceptioneException if $newAuthorId is not  an integer
-	 * @throws \TypeError if the Author Id is not
 	 **/
 	public function setAuthorId($newAuthorId, $exception, $newProfileId)
 		// verify the author id is valid
-			{$newProfileId = filter_var($newProfileId, FILTER_VALIDATE_INT);
-			if ($newAuthorId === false) {
-				throw (new UnexpectedValueException("profle is not a valid integer"));
-			}
-			//convert and store this author id
+	{
+		$newProfileId = filter_var($newProfileId, FILTER_VALIDATE_INT);
+		if($newAuthorId === false) {
+			throw (new UnexpectedValueException("profle is not a valid integer"));
+		}
+
+		//convert and store this author id
+		$this->authorId = intval($newAuthorId);
+
 
 
 		 {
