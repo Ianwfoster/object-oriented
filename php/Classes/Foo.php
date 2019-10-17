@@ -9,7 +9,7 @@
  * @author Ian W Foster <ifoster2@cnm.edu>
  *
  **/
-class Author  {
+class author {
 	/**
 	 * id for this Author; this is the primary key
 	 *
@@ -240,6 +240,5 @@ class Author  {
 		// store the Name
 		$this->AuthorName = $newAuthorName;
 	}
-}
+};
 
-?>
