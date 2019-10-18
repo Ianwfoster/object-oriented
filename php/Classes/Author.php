@@ -1,11 +1,11 @@
 <?php
 namespace Ianwfoster\ObjectOriented;
-
+require_once("autoload.php");
 require_once(dirname(__DIR__, 1) . "/vendor/autoload.php");
 
 use Ramsey\Uuid\Uuid;
 
-use ValidateUuid;
+
 /**
  * id for this Author; this is the primary key
  * @var Uuid $AuthorId
@@ -18,85 +18,77 @@ use ValidateUuid;
  * This will document all states variables in the class.This will also document the constructor method.
  *
  * @author Ian W Foster <ifoster2@cnm.edu>
- *
+ * @version o.o.1
  **/
-class author {
+use ValidateUuid;
+
+class Author implements \JsonSerializable {
 	/**
 	 * id for this Author; this is the primary key
 	 *
 	 **/
-	private $AuthorId;
+	private $authorId;
 	/**
 	 * author id that is this Author; this is a unique index
 	 * @var string $AuthorAvatarUrl
 	 **/
-	private $AuthorAvatarUrl;
+	private $authorAvatarUrl;
 	/**
 	 * token handed out to verify that the Author is valid and not malicious.
 	 *v@var $AuthorActivationToken
 	 **/
-	private $AuthorActivationToken;
+	private $authorActivationToken;
 	/**
 	 * email for this Author; this is a unique index
 	 * @var string $AuthorEmail
 	 **/
-	private $AuthorEmail;
+	private $authorEmail;
 	/**
 	 * hash for Author password
 	 * @var $AuthorHash
 	 **/
-	private $AuthorHash;
+	private $authorHash;
 	/**
 	 * Name for this Author
 	 * @var string $AuthorName
 	 **/
-	private $AuthorName;
-	/**
-	 * hash is Author password
-	 *
+	private $authorName;
 	/**
 	 * accessor method for Author id
 	 *
 	 * @return int value of Author id (or null if new Author)
 	 **/
-	public function getAuthorId(): int {
-		return ($this->AuthorId);
+	public function getAuthorId(): Uuid {
+		return ($this->authorId);
 	}
 	/**
 	 * mutator method for Author id
 	 *
-	 * @param  int| $newAuthorId value of new Author id
-	 * @throws \UnexpectedValueExceptioneException if $newAuthorId is not  an integer
+	 * @param Uuid | string $newAuthorId
+	 * @param  \ RangeException if $newAuthorId is not a positive
+	 * @throws \TypeError if $newAuthorId is not a Uuid
 	 **/
-	public function setAuthorId($newAuthorId, $exception, $newProfileId)
-		// verify the author id is valid
-	{
-		$newProfileId = filter_var($newProfileId, FILTER_VALIDATE_INT);
-		if($newAuthorId === false) {
-			throw (new UnexpectedValueException("profle is not a valid integer"));
-		}
-
-		//convert and store this author id
-		$this->authorId = intval($newAuthorId);
-
-
-
-		 {
-			$int = self::validateInt($newAuthorId);
-		}catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError ($exception)) {
+	public function setAuthorId( $newAuthorId): void {
+		try {
+			$uuid = self::validateUuid($newAuthorId);
+		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
 			$exceptionType = get_class($exception);
-			throw(new $exceptionType($exception->getAuthor(), 0, $exception));
+			throw (new $exceptionType($exception->getMessage(), 0, $exception));
 		}
-		// convert and store the Author id
-		$this->AuthorId = $int;
+		//convert and store this author id
+		$this->authorId = $uuid;
 	}
+
+
+
+
 	/**
 	 * accessor method for account activation token
 	 *
 	 * @return string value of the activation token
 	 */
 	public function getAuthorActivationToken() : ?string {
-		return ($this->AuthorActivationToken);
+		return ($this->authorActivationToken());
 	}
 	/**
 	 * mutator method for account activation token
@@ -108,7 +100,7 @@ class author {
 	 */
 	public function setAuthorActivationToken(?string $newAuthorActivationToken): void {
 		if($newAuthorActivationToken === null) {
-			$this->AuthorActivationToken = null;
+			$this->authorActivationToken = null;
 			return;
 		}
 		$newAuthorActivationToken = strtolower(trim($newAuthorActivationToken));
@@ -119,7 +111,7 @@ class author {
 		if(strlen($newAuthorActivationToken) !== 32) {
 			throw(new\RangeException("user activation token has to be 32"));
 		}
-		$this->AuthorActivationToken = $newAuthorActivationToken;
+		$this->authorActivationToken = $newAuthorActivationToken;
 	}
 	/**
 	 * accessor method for at handle
@@ -127,7 +119,7 @@ class author {
 	 * @return string value of at handle
 	 **/
 	public function getAuthorAvatarUrl(): string {
-		return ($this->AuthorAvatarUrl);
+		return ($this->authorAvatarUrl);
 	}
 	/**
 	 * mutator method for at handle
@@ -149,7 +141,7 @@ class author {
 			throw(new \RangeException("Author at handle is too large"));
 		}
 		// store the at handle
-		$this->AuthorAvatarUrl = $newAuthorAvatarUrl;
+		$this->authorAvatarUrl = $newAuthorAvatarUrl;
 	}
 	/**
 	 * accessor method for email
@@ -179,7 +171,7 @@ class author {
 			throw(new \RangeException("Author email is too large"));
 		}
 		// store the email
-		$this->AuthorEmail = $newAuthorEmail;
+		$this->authorEmail = $newAuthorEmail;
 	}
 	/**
 	 * accessor method for AuthorHash
@@ -187,7 +179,7 @@ class author {
 	 * @return string value of hash
 	 */
 	public function getAuthorHash(): string {
-		return $this->AuthorHash;
+		return $this->authorHash;
 	}
 
 	/**
@@ -214,15 +206,15 @@ class author {
 			throw(new \RangeException("Author hash must be 97 characters"));
 		}
 		//store the hash
-		$this->AuthorHash = $newAuthorHash;
+		$this->authorHash = $newAuthorHash;
 	}
 	/**
 	 * accessor method for Name
 	 *
 	 * @return string value of Name or null
 	 **/
-	public function getAuthorName(): ?string {
-		return ($this->AuthorName);
+	public function getAuthorName() {
+		return ($this->authorName);
 	}
 	/**
 	 * mutator method for Name
@@ -235,7 +227,7 @@ class author {
 	public function setAuthorName(?string $newAuthorName): void {
 		//if $AuthorName is null return it right away
 		if($newAuthorName === null) {
-			$this->AuthorName = null;
+			$this->authorName = null;
 			return;
 		}
 		// verify the Name is secure
@@ -249,7 +241,27 @@ class author {
 			throw(new \RangeException("Author Name is too large"));
 		}
 		// store the Name
-		$this->AuthorName = $newAuthorName;
+		$this->authorName = $newAuthorName;
 	}
+
+
+
+
+	/**
+	 * formats the state variables for JSON serialization
+	 *
+	 * @return array resulting state variables to serialize
+	 **/
+	public function jsonSerialize() : array {
+		$fields = get_object_vars($this);
+
+		$fields["authorId"] = $this->authorId->toString();
+		$fields["authorProfileId"] = $this->authorProfileId->toString();
+
+		//format the date so that the front end can consume it
+		$fields["authorDate"] = round(floatval($this->authorDate->format("U.u")) * 1000);
+		return($fields);
+	}
+
 };
 
