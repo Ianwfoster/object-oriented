@@ -50,9 +50,9 @@ class Author implements \JsonSerializable {
 	private $authorHash;
 	/**
 	 * Name for this Author
-	 * @var string $AuthorName
+	 * @var string $authorUserName
 	 **/
-	private $authorName;
+	private $authorUserName;
 	/**
 	 * accessor method for Author id
 	 *
@@ -149,7 +149,7 @@ class Author implements \JsonSerializable {
 	 * @return string value of email
 	 **/
 	public function getAuthorEmail(): string {
-		return $this->AuthorEmail;
+		return $this->authorEmail;
 	}
 	/**
 	 * mutator method for email
@@ -213,35 +213,35 @@ class Author implements \JsonSerializable {
 	 *
 	 * @return string value of Name or null
 	 **/
-	public function getAuthorName() {
-		return ($this->authorName);
+	public function getauthorUserName() {
+		return ($this->authorUserName);
 	}
 	/**
 	 * mutator method for Name
 	 *
-	 * @param string $newAuthorName new value of Name
+	 * @param string $newauthorUserName new value of Name
 	 * @throws \InvalidArgumentException if $newName is not a string or insecure
 	 * @throws \RangeException if $newName is > 32 characters
 	 * @throws \TypeError if $newName is not a string
 	 **/
-	public function setAuthorName(?string $newAuthorName): void {
-		//if $AuthorName is null return it right away
-		if($newAuthorName === null) {
-			$this->authorName = null;
+	public function setauthorUserName(?string $newauthorUserName): void {
+		//if $authorUserName is null return it right away
+		if($newauthorUserName === null) {
+			$this->authorUserName = null;
 			return;
 		}
 		// verify the Name is secure
-		$newAuthorName = trim($newAuthorName);
-		$newAuthorName = filter_var($newAuthorName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-		if(empty($newAuthorName) === true) {
+		$newauthorUserName = trim($newauthorUserName);
+		$newauthorUserName = filter_var($newauthorUserName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+		if(empty($newauthorUserName) === true) {
 			throw(new \InvalidArgumentException("Author Name is empty or insecure"));
 		}
 		// verify the Name will fit in the database
-		if(strlen($newAuthorName) > 32) {
+		if(strlen($newauthorUserName) > 32) {
 			throw(new \RangeException("Author Name is too large"));
 		}
 		// store the Name
-		$this->authorName = $newAuthorName;
+		$this->authorUserName = $newauthorUserName;
 	}
 
 
@@ -256,10 +256,7 @@ class Author implements \JsonSerializable {
 		$fields = get_object_vars($this);
 
 		$fields["authorId"] = $this->authorId->toString();
-		$fields["authorProfileId"] = $this->authorProfileId->toString();
 
-		//format the date so that the front end can consume it
-		$fields["authorDate"] = round(floatval($this->authorDate->format("U.u")) * 1000);
 		return($fields);
 	}
 
