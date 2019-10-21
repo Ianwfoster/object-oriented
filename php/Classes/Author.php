@@ -63,16 +63,17 @@ class Author implements \JsonSerializable {
 	 * @param string $newAuthorHash string containg password hash
 	 * @param string $newAuthorUserName string containing user name
 	 */
-	public function __construct($newAuthorId, ?string $newAuthorAvatarUrl, ?string $authorActivationToken, ?string $newAuthorEmail, ?string $newAuthorHash, ?string $newAuthorUserName) {
+	public function __construct($newAuthorId, string $newAuthorAvatarUrl, ?string $newAuthorActivationToken, string $newAuthorEmail, string $newAuthorHash, ?string $newAuthorUserName) {
 		try {
 			$this->setAuthorId($newAuthorId);
 			$this->setauthorAvatarUrl($newAuthorAvatarUrl);
-			$this->setAuthorActivationToken($authorActivationToken);
+			$this->setAuthorActivationToken($newAuthorActivationToken);
 			$this->setAuthorEmail($newAuthorEmail);
 			$this->setAuthorHash($newAuthorHash);
+			$this->setauthorUserName($newAuthorUserName);
 		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
 			//determine what type was thrown
-			$exceptionType = get_class(exception);
+			$exceptionType = get_class($exception);
 			throw(new $exceptionType($exception->getMessage(), 0, $exception));
 		}
 	}
@@ -110,7 +111,7 @@ class Author implements \JsonSerializable {
 	 *
 	 * @return int value of author avatar url (or null if new Author)
 	 **/
-	public function getAuthorAvatarUrl(): Uuid {
+	public function getAuthorAvatarUrl(): ?string {
 		return ($this->authorAvatarUrl);
 	}
 
@@ -139,7 +140,7 @@ class Author implements \JsonSerializable {
 	 * @return string value of the activation token
 	 */
 	public function getAuthorActivationToken(): ?string {
-		return ($this->authorActivationToken());
+		return ($this->authorActivationToken);
 	}
 
 	/**
@@ -228,31 +229,31 @@ class Author implements \JsonSerializable {
 	 * @return string value of hash
 	 */
 	public function getAuthorHash(): string {
-		return $this->authorHash;
+		return ($this->authorHash);
 	}
 
 	/**
-	 * mutator method for Author hash password
+	 * mutator method for author hash password
 	 *
 	 * @param string $newAuthorHash
 	 * @throws \InvalidArgumentException if the hash is not secure
 	 * @throws \RangeException if the hash is not 128 characters
-	 * @throws \TypeError if Author hash is not a string
+	 * @throws \TypeError if author hash is not a string
 	 */
 	public function setAuthorHash(string $newAuthorHash): void {
 		//enforce that the hash is properly formatted
 		$newAuthorHash = trim($newAuthorHash);
+		$newAuthorHash = strtolower($newAuthorHash);
 		if(empty($newAuthorHash) === true) {
-			throw(new \InvalidArgumentException("Author password hash empty or insecure"));
+			throw(new \InvalidArgumentException("author password hash empty or insecure"));
 		}
-		//enforce the hash is really an Argon hash
-		$AuthorHashInfo = password_get_info($newAuthorHash);
-		if($AuthorHashInfo["algoName"] !== "argon2i") {
-			throw(new \InvalidArgumentException("Author hash is not a valid hash"));
+		//enforce that the hash is a string representation of a hexadecimal
+		if(!ctype_xdigit($newAuthorHash)) {
+			throw(new \InvalidArgumentException("author password hash is empty or insecure"));
 		}
 		//enforce that the hash is exactly 97 characters.
 		if(strlen($newAuthorHash) !== 97) {
-			throw(new \RangeException("Author hash must be 97 characters"));
+			throw(new \RangeException("author hash must be 97 characters"));
 		}
 		//store the hash
 		$this->authorHash = $newAuthorHash;
@@ -263,7 +264,7 @@ class Author implements \JsonSerializable {
 	 *
 	 * @return string value of Name or null
 	 **/
-	public function getauthorUserName() {
+	public function getAuthorUserName() {
 		return ($this->authorUserName);
 	}
 
@@ -275,24 +276,24 @@ class Author implements \JsonSerializable {
 	 * @throws \RangeException if $newName is > 32 characters
 	 * @throws \TypeError if $newName is not a string
 	 **/
-	public function setauthorUserName(?string $newauthorUserName): void {
+	public function setauthorUserName(?string $newAuthorUserName): void {
 		//if $authorUserName is null return it right away
-		if($newauthorUserName === null) {
+		if($newAuthorUserName === null) {
 			$this->authorUserName = null;
 			return;
 		}
 		// verify the Name is secure
-		$newauthorUserName = trim($newauthorUserName);
-		$newauthorUserName = filter_var($newauthorUserName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-		if(empty($newauthorUserName) === true) {
+		$newAuthorUserName = trim($newAuthorUserName);
+		$newAuthorUserName = filter_var($newAuthorUserName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+		if(empty($newAuthorUserName) === true) {
 			throw(new \InvalidArgumentException("Author Name is empty or insecure"));
 		}
 		// verify the Name will fit in the database
-		if(strlen($newauthorUserName) > 32) {
+		if(strlen($newAuthorUserName) > 32) {
 			throw(new \RangeException("Author Name is too large"));
 		}
 		// store the Name
-		$this->authorUserName = $newauthorUserName;
+		$this->authorUserName = $newAuthorUserName;
 	}
 
 

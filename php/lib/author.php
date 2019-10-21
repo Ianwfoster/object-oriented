@@ -6,9 +6,9 @@ use Ianwfoster\ObjectOriented\Author;
 
 
 //use the constructor to create a new author
-$larry = new Author ("ca8a3786a44748d29578715736f9a80e",
-	"ef62dface6ee7bc2c5d50a326861c82d",
-	"http://google.com",
+$larry = new Author ("c280d4ac-2594-44c4-838a-cd989b567be2",
+	"google.com",
+	"c280d4ac259444c4838acd989b567be2",
 	"newauthor@email.com",
 	"ef5054c518d9564699100c4140704fb9437e1546a52a133e859875861131e8dfabfead859fd91bfed624c724fd713535d",
 	"authorTest");
