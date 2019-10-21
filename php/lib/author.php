@@ -6,7 +6,7 @@ use Ianwfoster\objectoriented\Author;
 use Ramsey\Uuid\Uuid;
 
 //use the constructor to create a new author
-$author = new Author ("ca8a3786-a447-48d2-9578-715736f9a80e",
+$author = new Author ("ca8a3786a44748d29578715736f9a80e",
 	"ef62dface6ee7bc2c5d50a326861c82d",
 	"http://google.com",
 	"newauthor@email.com",
