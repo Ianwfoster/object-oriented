@@ -2,7 +2,7 @@
 //load the author class
 require_once ("../Classes/autoload.php");
 
-use Ianwfoster\objectoriented\Author;
+use Ianwfoster\ObjectOriented\Author;
 use Ramsey\Uuid\Uuid;
 
 //use the constructor to create a new author

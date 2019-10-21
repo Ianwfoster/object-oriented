@@ -21,7 +21,7 @@ use Ramsey\Uuid\Uuid;
  * @version o.o.1
  **/
 class Author implements \JsonSerializable {
-use ValidateUuid;
+	use ValidateUuid;
 	/**
 	 * id for this Author; this is the primary key
 	 * @var Uuid $authorId
@@ -63,19 +63,19 @@ use ValidateUuid;
 	 * @param string $newAuthorHash string containg password hash
 	 * @param string $newAuthorUserName string containing user name
 	 */
-	public function __construct($newAuthorId,?string $newAuthorAvatarUrl, ?string $authorActivationToken, ?string $newAuthorEmail, ?string $newAuthorHash, ?string $newAuthorUserName) {
-		try{
+	public function __construct($newAuthorId, ?string $newAuthorAvatarUrl, ?string $authorActivationToken, ?string $newAuthorEmail, ?string $newAuthorHash, ?string $newAuthorUserName) {
+		try {
 			$this->setAuthorId($newAuthorId);
 			$this->setauthorAvatarUrl($newAuthorAvatarUrl);
 			$this->setAuthorActivationToken($authorActivationToken);
 			$this->setAuthorEmail($newAuthorEmail);
 			$this->setAuthorHash($newAuthorHash);
-		} catch( \InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
+		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
 			//determine what type was thrown
 			$exceptionType = get_class(exception);
 			throw(new $exceptionType($exception->getMessage(), 0, $exception));
 		}
-	} 
+	}
 
 
 	/**
@@ -86,14 +86,15 @@ use ValidateUuid;
 	public function getAuthorId(): Uuid {
 		return ($this->authorId);
 	}
+
 	/**
 	 * mutator method for author id
 	 *
 	 * @param Uuid | string $newAuthorId
-	 * @param  \ RangeException if $newAuthorId is not a positive
+	 * @param \ RangeException if $newAuthorId is not a positive
 	 * @throws \TypeError if $newAuthorId is not a Uuid
 	 **/
-	public function setAuthorId( $newAuthorId): void {
+	public function setAuthorId($newAuthorId): void {
 		try {
 			$uuid = self::validateUuid($newAuthorId);
 		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
@@ -111,16 +112,16 @@ use ValidateUuid;
 	 **/
 	public function getAuthorAvatarUrl(): Uuid {
 		return ($this->authorAvatarUrl);
-	}	
+	}
 
 	/**
 	 * mutator method for author avatar url
 	 *
 	 * @param Uuid | string $newauthorAvatarUrl
-	 * @param  \ RangeException if $newauthorAvatarUrl is not a positive
+	 * @param \ RangeException if $newauthorAvatarUrl is not a positive
 	 * @throws \TypeError if $newAuthorId is not a Uuid
 	 **/
-	public function setauthorAvatarUrl( $newAuthorAvatarUrl): void {
+	/*public function setAuthorAvatarUrl( $newAuthorAvatarUrl): void {
 		try {
 			$uuid = self::validateUuid($newAuthorAvatarUrl);
 		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
@@ -129,10 +130,7 @@ use ValidateUuid;
 		}
 		//convert and store this author id
 		$this->authorAvatarUrl = $uuid;
-	}
-
-
-
+	}*/
 
 
 	/**
@@ -140,9 +138,10 @@ use ValidateUuid;
 	 *
 	 * @return string value of the activation token
 	 */
-	public function getAuthorActivationToken() : ?string {
+	public function getAuthorActivationToken(): ?string {
 		return ($this->authorActivationToken());
 	}
+
 	/**
 	 * mutator method for account activation token
 	 *
@@ -167,7 +166,7 @@ use ValidateUuid;
 		$this->authorActivationToken = $newAuthorActivationToken;
 	}
 
-	}
+
 	/**
 	 * mutator method for at handle
 	 *
@@ -176,7 +175,7 @@ use ValidateUuid;
 	 * @throws \RangeException if $newAvatarUrl is > 32 characters
 	 * @throws \TypeError if $newAvatarUrl is not a string
 	 **/
-	public function setAuthorAvatarUrl(string $newAuthorAvatarUrl) : void {
+	public function setAuthorAvatarUrl(string $newAuthorAvatarUrl): void {
 		// verify the at handle is secure
 		$newAuthorAvatarUrl = trim($newAuthorAvatarUrl);
 		$newAuthorAvatarUrl = filter_var($newAuthorAvatarUrl, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
@@ -190,6 +189,7 @@ use ValidateUuid;
 		// store the at handle
 		$this->authorAvatarUrl = $newAuthorAvatarUrl;
 	}
+
 	/**
 	 * accessor method for email
 	 *
@@ -198,6 +198,7 @@ use ValidateUuid;
 	public function getAuthorEmail(): string {
 		return $this->authorEmail;
 	}
+
 	/**
 	 * mutator method for email
 	 *
@@ -220,6 +221,7 @@ use ValidateUuid;
 		// store the email
 		$this->authorEmail = $newAuthorEmail;
 	}
+
 	/**
 	 * accessor method for AuthorHash
 	 *
@@ -255,6 +257,7 @@ use ValidateUuid;
 		//store the hash
 		$this->authorHash = $newAuthorHash;
 	}
+
 	/**
 	 * accessor method for Name
 	 *
@@ -263,6 +266,7 @@ use ValidateUuid;
 	public function getauthorUserName() {
 		return ($this->authorUserName);
 	}
+
 	/**
 	 * mutator method for Name
 	 *
@@ -292,20 +296,21 @@ use ValidateUuid;
 	}
 
 
-
-
 	/**
 	 * formats the state variables for JSON serialization
 	 *
 	 * @return array resulting state variables to serialize
 	 **/
-	public function jsonSerialize() : array {
+	public function jsonSerialize(): array {
 		$fields = get_object_vars($this);
 
 		$fields["authorId"] = $this->authorId->toString();
 
-		return($fields);
+		return ($fields);
 	}
 
-};
+}
+
+
+
 
