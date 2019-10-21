@@ -1,6 +1,6 @@
 <?php
-namespace Ianwfoster\objectoriented;
-require_once(dirname(__DIR__, 1) . "/Clases/autoload.php");
+namespace Ianwfoster\ObjectOriented;
+require_once(dirname(__DIR__, 1) . "/Classes/autoload.php");
 use Ramsey\Uuid\Uuid;
 /**
  * Trait to validate a uuid
