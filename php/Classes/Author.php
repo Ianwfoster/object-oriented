@@ -1,7 +1,7 @@
 <?php
 namespace Ianwfoster\ObjectOriented;
 require_once("autoload.php");
-require_once(dirname(__DIR__, 1) . "/vendor/autoload.php");
+require_once(dirname(__DIR__, 1) . "/Classes/autoload.php");
 
 use Ramsey\Uuid\Uuid;
 
@@ -20,32 +20,31 @@ use Ramsey\Uuid\Uuid;
  * @author Ian W Foster <ifoster2@cnm.edu>
  * @version o.o.1
  **/
-use ValidateUuid;
-
 class Author implements \JsonSerializable {
+use ValidateUuid;
 	/**
 	 * id for this Author; this is the primary key
-	 *
+	 * @var Uuid $authorId
 	 **/
 	private $authorId;
 	/**
 	 * author id that is this Author; this is a unique index
-	 * @var string $AuthorAvatarUrl
+	 * @var string $authorAvatarUrl
 	 **/
 	private $authorAvatarUrl;
 	/**
 	 * token handed out to verify that the Author is valid and not malicious.
-	 *v@var $AuthorActivationToken
+	 *v@var $authorActivationToken
 	 **/
 	private $authorActivationToken;
 	/**
 	 * email for this Author; this is a unique index
-	 * @var string $AuthorEmail
+	 * @var string $authorEmail
 	 **/
 	private $authorEmail;
 	/**
 	 * hash for Author password
-	 * @var $AuthorHash
+	 * @var $authorHash
 	 **/
 	private $authorHash;
 	/**
@@ -53,16 +52,42 @@ class Author implements \JsonSerializable {
 	 * @var string $authorUserName
 	 **/
 	private $authorUserName;
+
 	/**
-	 * accessor method for Author id
+	 * constructor for  this author.
 	 *
-	 * @return int value of Author id (or null if new Author)
+	 * @param string $newAuthorId string containing newAuthorId
+	 * @param string|null $newAuthorAvatarUrl
+	 * @param string|null $authorActivationToken
+	 * @param string $newAuthorEmail string containing email
+	 * @param string $newAuthorHash string containg password hash
+	 * @param string $newAuthorUserName string containing user name
+	 */
+	public function __construct($newAuthorId,?string $newAuthorAvatarUrl, ?string $authorActivationToken, ?string $newAuthorEmail, ?string $newAuthorHash, ?string $newAuthorUserName) {
+		try{
+			$this->setAuthorId($newAuthorId);
+			$this->setauthorAvatarUrl($newAuthorAvatarUrl);
+			$this->setAuthorActivationToken($authorActivationToken);
+			$this->setAuthorEmail($newAuthorEmail);
+			$this->setAuthorHash($newAuthorHash);
+		} catch( \InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
+			//determine what type was thrown
+			$exceptionType = get_class(exception);
+			throw(new $exceptionType($exception->getMessage(), 0, $exception));
+		}
+	} 
+
+
+	/**
+	 * accessor method for author id
+	 *
+	 * @return int value of author id (or null if new Author)
 	 **/
 	public function getAuthorId(): Uuid {
 		return ($this->authorId);
 	}
 	/**
-	 * mutator method for Author id
+	 * mutator method for author id
 	 *
 	 * @param Uuid | string $newAuthorId
 	 * @param  \ RangeException if $newAuthorId is not a positive
@@ -78,6 +103,34 @@ class Author implements \JsonSerializable {
 		//convert and store this author id
 		$this->authorId = $uuid;
 	}
+
+	/**
+	 * accessor method for author avatar url
+	 *
+	 * @return int value of author avatar url (or null if new Author)
+	 **/
+	public function getAuthorAvatarUrl(): Uuid {
+		return ($this->authorAvatarUrl);
+	}	
+
+	/**
+	 * mutator method for author avatar url
+	 *
+	 * @param Uuid | string $newauthorAvatarUrl
+	 * @param  \ RangeException if $newauthorAvatarUrl is not a positive
+	 * @throws \TypeError if $newAuthorId is not a Uuid
+	 **/
+	public function setauthorAvatarUrl( $newAuthorAvatarUrl): void {
+		try {
+			$uuid = self::validateUuid($newAuthorAvatarUrl);
+		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
+			$exceptionType = get_class($exception);
+			throw (new $exceptionType($exception->getMessage(), 0, $exception));
+		}
+		//convert and store this author id
+		$this->authorAvatarUrl = $uuid;
+	}
+
 
 
 
@@ -113,13 +166,7 @@ class Author implements \JsonSerializable {
 		}
 		$this->authorActivationToken = $newAuthorActivationToken;
 	}
-	/**
-	 * accessor method for at handle
-	 *
-	 * @return string value of at handle
-	 **/
-	public function getAuthorAvatarUrl(): string {
-		return ($this->authorAvatarUrl);
+
 	}
 	/**
 	 * mutator method for at handle

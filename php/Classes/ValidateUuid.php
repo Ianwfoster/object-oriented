@@ -1,6 +1,6 @@
 <?php
-namespace Deepdivedylan\DataDesign;
-require_once(dirname(__DIR__, 2) . "/vendor/autoload.php");
+namespace Ianwfoster\objectoriented;
+require_once(dirname(__DIR__, 1) . "/Clases/autoload.php");
 use Ramsey\Uuid\Uuid;
 /**
  * Trait to validate a uuid
