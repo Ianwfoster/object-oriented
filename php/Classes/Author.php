@@ -26,6 +26,7 @@ use TypeError;
  * @version o.o.1
  **/
 class Author implements JsonSerializable {
+	use ValidateDate;
 	use ValidateUuid;
 	/**
 	 * id for this Author; this is the primary key
@@ -57,6 +58,7 @@ class Author implements JsonSerializable {
 	 * @var string $authorUserName
 	 **/
 	private $authorUserName;
+	private $Date;
 
 	/**
 	 * constructor for  this author.
@@ -246,54 +248,136 @@ class Author implements JsonSerializable {
 	}
 
 	/**
-	 * accessor method for Name
+	 * inserts this author into mySQL
 	 *
-	 * @return string value of Name or null
-	 **/
-	public function getAuthorUserName(): string {
-		return ($this->authorUserName);
-	}
-
-	/**
-	 * mutator method for Name
-	 *
-	 * @param string|null $newAuthorUserName
+	 * @param \PDO $pdo PDO connection object
+	 * @param $query
 	 */
-	public function setAuthorUserName(?string $newAuthorUserName): void {
-		//if $authorUserName is null return it right away
-		if($newAuthorUserName === null) {
-			$this->authorUserName = null;
-			return;
-		}
-		// verify the Name is secure
-		$newAuthorUserName = trim($newAuthorUserName);
-		$newAuthorUserName = filter_var($newAuthorUserName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-		if(empty($newAuthorUserName) === true) {
-			throw(new InvalidArgumentException("Author Name is empty or insecure"));
-		}
-		// verify the Name will fit in the database
-		if(strlen($newAuthorUserName) > 32) {
-			throw(new RangeException("Author Name is too large"));
-		}
-		// store the Name
-		$this->authorUserName = $newAuthorUserName;
-	}
+	public function insert(\PDO $pdo, $query, $Date): void {
 
+		/// create query template
+		$query = "INSERT INTO author(authorId,authorAvatarUrl, authorActivationToken, authorEmail, authorHash) VALUES(:authorId, :authorAvatar, :authorActivationToken, :authorEmail, authorHash)";
+		$statement = $pdo->prepare($query);
+
+		// bind the member variables to the place holders in the template
+		$formattedDate = $this->Date->format("Y-m-d H:i:s.u");
+		$parameters = ["authorId" => $this->authorId->getBytes(), "authorAvatarUrl" => $this->authorAvatarUrl->getBytes(), "authorEmail" => $this->authorEmail, "authorHash" => $this->authorHash];
+		$statement->execute($parameters);
+		}
 
 	/**
-	 * formats the state variables for JSON serialization
+	 * deletes this author from mySQL
 	 *
-	 * @return array resulting state variables to serialize
+	 * @param \PDO $pdo PDO connection object
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError if $pdo is not a PDO connection object
 	 **/
-	public function jsonSerialize(): array {
-		$fields = get_object_vars($this);
+	public function delete(\PDO $pdo) : void {
 
-		$fields["authorId"] = $this->authorId->toString();
+		// create query template
+		$query = "DELETE FROM author WHERE authorId = :authorId";
+		$statement = $pdo->prepare($query);
 
-		return ($fields);
+		// bind the member variables to the place holder in the template
+		$parameters = ["authorId" => $this->authorId->getBytes()];
+		$statement->execute($parameters);
+	}
+		
+
+		/**
+		 * accessor method for Name
+		 *
+		 * @return string value of Name or null
+		 **/
+		public
+		function getAuthorUserName(): string {
+			return ($this->authorUserName);
+		}
+
+		/**
+		 * mutator method for Name
+		 *
+		 * @param string|null $newAuthorUserName
+		 */
+		public
+		function setAuthorUserName(?string $newAuthorUserName): void {
+			//if $authorUserName is null return it right away
+			if($newAuthorUserName === null) {
+				$this->authorUserName = null;
+				return;
+			}
+			// verify the Name is secure
+			$newAuthorUserName = trim($newAuthorUserName);
+			$newAuthorUserName = filter_var($newAuthorUserName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+			if(empty($newAuthorUserName) === true) {
+				throw(new InvalidArgumentException("Author Name is empty or insecure"));
+			}
+			// verify the Name will fit in the database
+			if(strlen($newAuthorUserName) > 32) {
+				throw(new RangeException("Author Name is too large"));
+			}
+			// store the Name
+			$this->authorUserName = $newAuthorUserName;
+		}
+
+	/**
+	 * gets the author by authorId
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @param Uuid|string $authorId author id to search for
+	 * @return author|null author found or null if not found
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError when a variable are not the correct data type
+	 **/
+	public static function getAuthorByAuthorId(\PDO $pdo, $authorId) : ?author {
+		// sanitize the authorId before searching
+		try {
+			$authorId = self::validateUuid($authorId);
+		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
+			throw(new \PDOException($exception->getMessage(), 0, $exception));
+		}
+
+		// create query template
+		$query = "SELECT authorId, authorAvatarUrl, authorActivationToken, authorEmail, authorHash FROM author WHERE authorId = :authorId";
+		$statement = $pdo->prepare($query);
+
+		// bind the author id to the place holder in the template
+		$parameters = ["authorId" => $authorId->getBytes()];
+		$statement->execute($parameters);
+
+		// grab the author from mySQL
+		try {
+			$author = null;
+			$statement->setFetchMode(\PDO::FETCH_ASSOC);
+			$row = $statement->fetch();
+			if($row !== false) {
+				$author = new author($row["authorId"], $row["authorAvatar"], $row["authorActivationToken"], $row["authorEmail"], $row["authorHash"]);
+			}
+		} catch(\Exception $exception) {
+			// if the row couldn't be converted, rethrow it
+			throw(new \PDOException($exception->getMessage(), 0, $exception));
+		}
+		return($author);
+	}
+		
+
+
+		/**
+		 * formats the state variables for JSON serialization
+		 *
+		 * @return array resulting state variables to serialize
+		 **/
+		public
+		function jsonSerialize(): array {
+			$fields = get_object_vars($this);
+
+			$fields["authorId"] = $this->authorId->toString();
+
+			return ($fields);
+		}
+
 	}
 
-}
 
 
 
