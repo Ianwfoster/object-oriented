@@ -169,11 +169,11 @@ class Author implements JsonSerializable {
 		}
 		$newAuthorActivationToken = strtolower(trim($newAuthorActivationToken));
 		if(ctype_xdigit($newAuthorActivationToken) === false) {
-			throw(newRangeException("user activation is not valid"));
+			throw(RangeException("user activation is not valid"));
 		}
 		//make sure user activation token is only 32 characters
 		if(strlen($newAuthorActivationToken) !== 32) {
-			throw(newRangeException("user activation token has to be 32"));
+			throw(RangeException("user activation token has to be 32"));
 		}
 		$this->authorActivationToken = $newAuthorActivationToken;
 	}
@@ -329,7 +329,7 @@ class Author implements JsonSerializable {
 	 * @throws \PDOException when mySQL related errors occur
 	 * @throws \TypeError when a variable are not the correct data type
 	 **/
-	public static function getAuthorByAuthorId(\PDO $pdo, $authorId) : ?author {
+	public static function getAuthorByAuthorId(\PDO $pdo, $authorId, $newauthor) : ?author {
 		// sanitize the authorId before searching
 		try {
 			$authorId = self::validateUuid($authorId);
@@ -337,7 +337,7 @@ class Author implements JsonSerializable {
 			throw(new \PDOException($exception->getMessage(), 0, $exception));
 		}
 
-		// create query template
+		//  query template for author
 		$query = "SELECT authorId, authorAvatarUrl, authorActivationToken, authorEmail, authorHash FROM author WHERE authorId = :authorId";
 		$statement = $pdo->prepare($query);
 
@@ -351,7 +351,7 @@ class Author implements JsonSerializable {
 			$statement->setFetchMode(\PDO::FETCH_ASSOC);
 			$row = $statement->fetch();
 			if($row !== false) {
-				$author = new author($row["authorId"], $row["authorAvatar"], $row["authorActivationToken"], $row["authorEmail"], $row["authorHash"]);
+				$author = $newauthor($row["authorId"], $row["authorAvatar"], $row["authorActivationToken"], $row["authorEmail"], $row["authorHash"]);
 			}
 		} catch(\Exception $exception) {
 			// if the row couldn't be converted, rethrow it
@@ -374,6 +374,7 @@ class Author implements JsonSerializable {
 			$fields["authorId"] = $this->authorId->toString();
 
 			return ($fields);
+
 		}
 
 	}
