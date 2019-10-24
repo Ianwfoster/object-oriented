@@ -362,20 +362,47 @@ class Author implements JsonSerializable {
 		
 
 
-		/**
-		 * formats the state variables for JSON serialization
-		 *
-		 * @return array resulting state variables to serialize
-		 **/
-		public
-		function jsonSerialize(): array {
-			$fields = get_object_vars($this);
 
-			$fields["authorId"] = $this->authorId->toString();
-
-			return ($fields);
-
+	/**
+	 * get all authors by username
+	 *
+	 * @param \PDO $pdo PDO Connection object
+	 * @return \SplFixedArray SplFixedArray of authors found or null if not found
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError when variables are not the correct data type
+	 */
+	public static function getAuthorByUsername (\PDO $pdo) : \SplFixedArray {
+		// create query temp.
+		$query = "SELECT authorId, authorActivationToken, authorAvatarUrl, authorEmail, authorHash, authorUsername FROM author WHERE authorUsername = :authorUsername";
+		$statement = $pdo->prepare($query);
+		$statement->execute();
+		//build an array of authors
+		$authors = new \SplFixedArray($statement->rowCount());
+		$statement->setFetchMode(\PDO::FETCH_ASSOC);
+		while(($row =$statement->fetch()) !== false) {
+			try {
+				$author = new Author($row["authorId"], $row["authorActivationToken"], $row["authorAvatarUrl"], $row["authorEmail"],
+					$row["authorHash"], $row["authorUsername"]);
+				$authors[$authors->key()] = $author;
+				$authors->next();
+			} catch(\Exception $exception) {
+				// if the row couldn't be converted, rethrow it
+				throw (new \PDOException($exception->getMessage(), 0, $exception));
+			}
 		}
+		return ($authors);
+	}
+	/**
+	 * formats the state variables for JSON serialization
+	 *
+	 * @return array resulting state variables to serialize
+	 **/
+	public function jsonSerialize() {
+		$fields = get_object_vars($this);
+		$fields["authorId"] = $this->authorId->toString();
+		unset($fields["authorHash"]);
+		return ($fields);
+	}
 
 	}
 
