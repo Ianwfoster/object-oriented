@@ -167,10 +167,7 @@ class Author implements JsonSerializable {
 			$this->authorActivationToken = null;
 			return;
 		}
-		$newAuthorActivationToken = strtolower(trim($newAuthorActivationToken));
-		if(ctype_xdigit($newAuthorActivationToken) === false) {
-			throw(RangeException("user activation is not valid"));
-		}
+
 		//make sure user activation token is only 32 characters
 		if(strlen($newAuthorActivationToken) !== 32) {
 			throw(RangeException("user activation token has to be 32"));
@@ -260,7 +257,6 @@ class Author implements JsonSerializable {
 		$statement = $pdo->prepare($query);
 
 		// bind the member variables to the place holders in the template
-		$formattedDate = $this->Date->format("Y-m-d H:i:s.u");
 		$parameters = ["authorId" => $this->authorId->getBytes(), "authorAvatarUrl" => $this->authorAvatarUrl->getBytes(), "authorEmail" => $this->authorEmail, "authorHash" => $this->authorHash];
 		$statement->execute($parameters);
 		}
@@ -359,30 +355,37 @@ class Author implements JsonSerializable {
 		}
 		return($author);
 	}
-		
-
 
 
 	/**
 	 * get all authors by username
 	 *
 	 * @param \PDO $pdo PDO Connection object
+	 * @param $authorUserName
 	 * @return \SplFixedArray SplFixedArray of authors found or null if not found
-	 * @throws \PDOException when mySQL related errors occur
-	 * @throws \TypeError when variables are not the correct data type
 	 */
-	public static function getAuthorByUsername (\PDO $pdo) : \SplFixedArray {
+	public static function getAuthorByUserName (\PDO $pdo, $authorUserName) : \SplFixedArray {
+		$authorUserName = trim($authorUserName);
+		$authorUserName = filter_var($authorUserName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+		if(empty($authorUserName) === true) {
+			throw(new InvalidArgumentException("Author Name is empty or insecure"));
+		}
+		// verify the Name will fit in the database
+		if(strlen($authorUserName) > 32) {
+			throw(new RangeException("Author Name is too large"));
+		}
 		// create query temp.
-		$query = "SELECT authorId, authorActivationToken, authorAvatarUrl, authorEmail, authorHash, authorUsername FROM author WHERE authorUsername = :authorUsername";
+		$query = "SELECT authorId, authorActivationToken, authorAvatarUrl, authorEmail, authorHash, authorUserName FROM author WHERE authorUserName = :authorUserName";
 		$statement = $pdo->prepare($query);
-		$statement->execute();
+		$parameters = ["authorUserName"=>$authorUserName];
+		$statement->execute($parameters);
 		//build an array of authors
 		$authors = new \SplFixedArray($statement->rowCount());
 		$statement->setFetchMode(\PDO::FETCH_ASSOC);
 		while(($row =$statement->fetch()) !== false) {
 			try {
 				$author = new Author($row["authorId"], $row["authorActivationToken"], $row["authorAvatarUrl"], $row["authorEmail"],
-					$row["authorHash"], $row["authorUsername"]);
+					$row["authorHash"], $row["authorUserName"]);
 				$authors[$authors->key()] = $author;
 				$authors->next();
 			} catch(\Exception $exception) {
